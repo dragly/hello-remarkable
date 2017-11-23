@@ -47,7 +47,7 @@
 
 //! [0]
 TabletCanvas::TabletCanvas(QQuickItem *parent)
-  : QQuickPaintedItem (parent)
+  : QQuickItem (parent)
   , m_alphaChannelValuator(TangentialPressureValuator)
   , m_colorSaturationValuator(NoValuator)
   , m_lineWidthValuator(PressureValuator)
@@ -57,12 +57,24 @@ TabletCanvas::TabletCanvas(QQuickItem *parent)
   , m_deviceDown(false)
 {
     initPixmap();
-    setFillColor(Qt::transparent);
+
+    m_canvasWidth = 1404 / m_columns;
+    m_canvasHeight = 1872 / m_rows;
+    for (int i = 0; i < m_rows; i++) {
+        m_paintedCanvasMap.append(QVector<PaintedCanvas*>());
+        for (int j = 0; j < m_columns; j++) {
+            qreal x = j * m_canvasWidth;
+            qreal y = i * m_canvasHeight;
+            PaintedCanvas *canvas = new PaintedCanvas(QRectF(x, y, m_canvasWidth, m_canvasHeight), &m_pixmap, this);
+            m_paintedCanvases.append(canvas);
+            m_paintedCanvasMap[i].append(canvas);
+        }
+    }
 }
 
 void TabletCanvas::initPixmap()
 {
-    QPixmap newPixmap = QPixmap(1404 / 24, 1872 / 24);
+    QPixmap newPixmap = QPixmap(1404, 1872);
     newPixmap.fill(Qt::transparent);
     QPainter painter(&newPixmap);
     if (!m_pixmap.isNull())
@@ -87,17 +99,11 @@ void TabletCanvas::tabletEvent(QTabletEvent *event)
             if (event->device() == QTabletEvent::RotationStylus)
                 updateCursor(event);
             if (m_deviceDown) {
-                QRectF boundingRect(x(), y(), width(), height());
-                if (!boundingRect.contains(event->globalPosF())) {
-                    return;
-                }
                 updateBrush(event);
                 QPainter painter(&m_pixmap);
                 paintPixmap(painter, event);
                 lastPoint.pos = event->posF();
                 lastPoint.rotation = event->rotation();
-                m_latestRect = QRect(event->pos().x() - 5, event->pos().y() - 5, 10, 10);
-                update(m_latestRect);
             }
             break;
         case QEvent::TabletRelease:
@@ -107,6 +113,24 @@ void TabletCanvas::tabletEvent(QTabletEvent *event)
         default:
             break;
     }
+    int i = event->posF().y() / m_canvasHeight;
+    int j = event->posF().x() / m_canvasWidth;
+
+    if (m_paintedCanvasMap.size() < 1) {
+        qWarning() << "Error: no canvases in map" << event->posF();
+        return;
+    }
+    if (i >= m_paintedCanvasMap.size()) {
+        qWarning() << "Error: event outside all canvases" << event->posF();
+        return;
+    }
+    if (j >= m_paintedCanvasMap[i].size()) {
+        qWarning() << "Error: event outside all canvases" << event->posF();
+        return;
+    }
+
+    PaintedCanvas *canvas = m_paintedCanvasMap[i][j];
+    canvas->update();
 }
 
 void TabletCanvas::paintPixmap(QPainter &painter, QTabletEvent *event)
@@ -266,8 +290,19 @@ void TabletCanvas::updateCursor(const QTabletEvent *event)
     setCursor(cursor);
 }
 
-void TabletCanvas::paint(QPainter *painter)
+PaintedCanvas::PaintedCanvas(QRectF rect, QPixmap *pixmap, QQuickItem *parent)
+    : QQuickPaintedItem(parent)
+    , m_pixmap(pixmap)
 {
-    qDebug() << "Painting!" << this;
-    painter->drawPixmap(0, 0, m_pixmap);
+    setFillColor(Qt::transparent);
+    setX(rect.x());
+    setY(rect.y());
+    setWidth(rect.width());
+    setHeight(rect.height());
+}
+
+void PaintedCanvas::paint(QPainter *painter)
+{
+    painter->drawText(0, 0, QString::number(x()) + " " + QString::number(y()));
+    painter->drawPixmap(boundingRect(), *m_pixmap, QRect(x(), y(), width(), height()));
 }

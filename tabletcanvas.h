@@ -55,8 +55,20 @@ class QPaintEvent;
 class QString;
 QT_END_NAMESPACE
 
+class PaintedCanvas : public QQuickPaintedItem
+{
+    Q_OBJECT
+
+public:
+    PaintedCanvas(QRectF rect, QPixmap *pixmap, QQuickItem *parent = nullptr);
+    virtual void paint(QPainter *painter) override;
+
+private:
+    QPixmap *m_pixmap;
+};
+
 //! [0]
-class TabletCanvas : public QQuickPaintedItem
+class TabletCanvas : public QQuickItem
 {
     Q_OBJECT
 
@@ -99,15 +111,19 @@ private:
     QPen m_pen;
     bool m_deviceDown;
     QRect m_latestRect;
+    QVector<QVector<PaintedCanvas*>> m_paintedCanvasMap;
+    QVector<PaintedCanvas*> m_paintedCanvases;
+
+    int m_rows = 32;
+    int m_columns = 24;
+
+    qreal m_canvasWidth = 0.0;
+    qreal m_canvasHeight = 0.0;
 
     struct Point {
         QPointF pos;
         qreal rotation;
     } lastPoint;
-
-    // QQuickPaintedItem interface
-public:
-    virtual void paint(QPainter *painter) override;
 };
 //! [0]
 

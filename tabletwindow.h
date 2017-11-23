@@ -7,29 +7,27 @@
 class TabletWindow : public QQuickWindow
 {
     Q_OBJECT
-    Q_PROPERTY(QQmlListProperty<TabletCanvas> canvases READ canvases)
+    Q_PROPERTY(TabletCanvas* canvas READ canvas WRITE setCanvas NOTIFY canvasChanged)
 
 public:
     explicit TabletWindow(QWindow *parent = nullptr);
 
     QQmlListProperty<TabletCanvas> canvases();
+    TabletCanvas* canvas() const;
+
+public slots:
+    void setCanvas(TabletCanvas* canvas);
+
 signals:
     void penEvent(QPointF position, qreal pressure);
-
     void canvasChanged(TabletCanvas* canvas);
 
 protected:
     virtual void tabletEvent(QTabletEvent *) override;
 
-    virtual bool event(QEvent *event) override;
-
     // QWindow interface
 protected:
-    virtual void mousePressEvent(QMouseEvent *) override;
-    virtual void touchEvent(QTouchEvent *) override;
-    virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
-
-    QList<TabletCanvas *> m_canvases;
+    TabletCanvas* m_canvas = nullptr;
 };
 
 #endif // TABLETWINDOW_H

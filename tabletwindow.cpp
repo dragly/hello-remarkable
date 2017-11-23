@@ -26,41 +26,23 @@ void TabletWindow::tabletEvent(QTabletEvent *event)
     QPointF rotatedGlobal(rotate(event->globalPosF(), width(), height()));
     penEvent(rotated, event->pressure());
 
-    for (TabletCanvas *canvas : m_canvases) {
-        QPointF offset = rotated - canvas->position();
+    if (m_canvas) {
+        QPointF offset = rotated - m_canvas->position();
         QTabletEvent *fakeEvent = new QTabletEvent(event->type(), offset, rotatedGlobal, event->device(), event->pointerType(), event->pressure(), event->xTilt(), event->yTilt(), event->tangentialPressure(), event->rotation(), event->z(), event->modifiers(), event->uniqueId());
-        canvas->tabletEvent(fakeEvent);
+        m_canvas->tabletEvent(fakeEvent);
     }
 }
 
-bool TabletWindow::event(QEvent *event)
+TabletCanvas *TabletWindow::canvas() const
 {
-    if (dynamic_cast<QTimerEvent*>(event)) {
-        return QQuickWindow::event(event);
-    }
-//    qDebug() << "Event!" << event;
-    return QQuickWindow::event(event);
+    return m_canvas;
 }
 
-void TabletWindow::mousePressEvent(QMouseEvent *event)
+void TabletWindow::setCanvas(TabletCanvas *canvas)
 {
-    QQuickWindow::mousePressEvent(event);
-    qDebug() << "Press event!" << event;
-}
+    if (m_canvas == canvas)
+        return;
 
-void TabletWindow::touchEvent(QTouchEvent *event)
-{
-    qDebug() << "Touch event!" << event;
-    QQuickWindow::touchEvent(event);
-}
-
-bool TabletWindow::nativeEvent(const QByteArray &eventType, void *message, long *result)
-{
-    qDebug() << "Native event!" << eventType;
-    return QQuickWindow::nativeEvent(eventType, message, result);
-}
-
-QQmlListProperty<TabletCanvas> TabletWindow::canvases()
-{
-    return QQmlListProperty<TabletCanvas>(this, m_canvases);
+    m_canvas = canvas;
+    emit canvasChanged(m_canvas);
 }
