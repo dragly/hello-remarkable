@@ -7,9 +7,6 @@
 
 TabletWindow::TabletWindow(QWindow *parent) : QQuickWindow(parent)
 {
-//    setVisibility(QWindow::FullScreen);
-//    setWidth(QGuiApplication::primaryScreen()->size().width());
-//    setHeight(QGuiApplication::primaryScreen()->size().height());
 }
 
 QPointF rotate(QPointF other, qreal width, qreal height)

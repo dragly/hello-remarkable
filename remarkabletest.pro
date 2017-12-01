@@ -14,9 +14,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp \
     tabletwindow.cpp \
-    tabletcanvas.cpp \
-    beziercurve.cpp \
-    simplematerial.cpp
+    tabletcanvas.cpp
 
 RESOURCES += qml.qrc
 
@@ -39,7 +37,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     tabletwindow.h \
-    tabletcanvas.h \
-    beziercurve.h \
-    simplematerial.h
+    tabletcanvas.h
 

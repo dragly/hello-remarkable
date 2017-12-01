@@ -3,8 +3,6 @@
 #include <QQmlEngine>
 
 #include "tabletwindow.h"
-#include "beziercurve.h"
-#include "simplematerial.h"
 
 #include <QtPlugin>
 #ifdef __arm__
@@ -15,8 +13,6 @@ int main(int argc, char *argv[])
 {
     qmlRegisterType<TabletWindow>("Test", 1, 0, "TabletWindow");
     qmlRegisterType<TabletCanvas>("Test", 1, 0, "TabletCanvas");
-    qmlRegisterType<BezierCurve>("Test", 1, 0, "BezierCurve");
-    qmlRegisterType<SimpleMaterial>("Test", 1, 0, "SimpleMaterialItem");
 
 #ifdef __arm__
     qputenv("QMLSCENE_DEVICE", "epaper");

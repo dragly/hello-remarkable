@@ -44,6 +44,7 @@
 #include <QCursor>
 #include <QPainter>
 #include <QDebug>
+#include <QTime>
 
 //! [0]
 TabletCanvas::TabletCanvas(QQuickItem *parent)
@@ -75,7 +76,7 @@ TabletCanvas::TabletCanvas(QQuickItem *parent)
 void TabletCanvas::initPixmap()
 {
     QPixmap newPixmap = QPixmap(1404, 1872);
-    newPixmap.fill(Qt::transparent);
+    newPixmap.fill(Qt::white);
     QPainter painter(&newPixmap);
     if (!m_pixmap.isNull())
         painter.drawPixmap(0, 0, m_pixmap);
@@ -294,7 +295,7 @@ PaintedCanvas::PaintedCanvas(QRectF rect, QPixmap *pixmap, QQuickItem *parent)
     : QQuickPaintedItem(parent)
     , m_pixmap(pixmap)
 {
-    setFillColor(Qt::transparent);
+    setFillColor(Qt::white);
     setX(rect.x());
     setY(rect.y());
     setWidth(rect.width());
@@ -303,6 +304,5 @@ PaintedCanvas::PaintedCanvas(QRectF rect, QPixmap *pixmap, QQuickItem *parent)
 
 void PaintedCanvas::paint(QPainter *painter)
 {
-    painter->drawText(0, 0, QString::number(x()) + " " + QString::number(y()));
     painter->drawPixmap(boundingRect(), *m_pixmap, QRect(x(), y(), width(), height()));
 }

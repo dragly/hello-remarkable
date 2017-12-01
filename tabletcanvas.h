@@ -49,6 +49,7 @@
 #include <QPen>
 #include <QPoint>
 #include <QQuickPaintedItem>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 class QPaintEvent;
@@ -62,6 +63,7 @@ class PaintedCanvas : public QQuickPaintedItem
 public:
     PaintedCanvas(QRectF rect, QPixmap *pixmap, QQuickItem *parent = nullptr);
     virtual void paint(QPainter *painter) override;
+    bool dirty = false;
 
 private:
     QPixmap *m_pixmap;
@@ -114,8 +116,8 @@ private:
     QVector<QVector<PaintedCanvas*>> m_paintedCanvasMap;
     QVector<PaintedCanvas*> m_paintedCanvases;
 
-    int m_rows = 32;
-    int m_columns = 24;
+    int m_rows = 8;
+    int m_columns = 6;
 
     qreal m_canvasWidth = 0.0;
     qreal m_canvasHeight = 0.0;
