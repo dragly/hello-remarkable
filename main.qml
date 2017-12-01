@@ -11,11 +11,6 @@ TabletWindow {
     width: 1404
     height: 1872
 
-    onPenEvent: {
-//        rect.x = position.x
-//        rect.y = position.y
-//        rect.opacity = pressure
-    }
     canvas: tabletCanvas
 
     Rectangle {
@@ -27,10 +22,6 @@ TabletWindow {
         id: tabletCanvas
         anchors.fill: parent
     }
-
-//    BezierCurve {
-//        anchors.fill: parent
-//    }
 
     Text {
         anchors.centerIn: parent
@@ -49,18 +40,4 @@ TabletWindow {
             margins: 32
         }
     }
-
-//    Rectangle {
-//        id: rect
-//        color: "grey"
-//        width: 200
-//        height: 200
-//        x: 400
-//        y: 400
-
-//        MouseArea {
-//            anchors.fill: parent
-//            drag.target: parent
-//        }
-//    }
 }
